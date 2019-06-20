@@ -63,9 +63,13 @@ class QifParser(object):
             if not chunk:
                 continue
             first_line = chunk.split('\n')[0]
+            if first_line == '!Option:AutoSwitch' or first_line == '!Clear:AutoSwitch':
+                first_line = chunk.split('\n')[1]
+                chunk = '\n'.join(chunk.split('\n')[1:])
+
             if first_line == '!Type:Cat':
                 last_type = 'category'
-            elif first_line == '!Option:AutoSwitch' or first_line == '!Clear:AutoSwitch' or first_line == '!Type:Template':
+            elif first_line == '!Type:Template' or first_line == '!Type:InvItem':
                 continue
             elif first_line == '!Type:Tag':
                 last_type = 'tag'
@@ -83,7 +87,6 @@ class QifParser(object):
                 last_type = 'memorized'
                 transactions_header = first_line
             elif chunk.startswith('!'):
-                print(first_line)
                 raise QifParserException('Header not reconized')
             # if no header is recognized then
             # we use the previous one
